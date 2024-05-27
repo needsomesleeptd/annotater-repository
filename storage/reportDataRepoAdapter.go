@@ -34,7 +34,7 @@ func (repo *ReportDataRepositoryAdapter) Exists(path string) bool {
 	return !os.IsNotExist(err)
 }
 
-func (repo *ReportDataRepositoryAdapter) AddReport(rep *models.ErrorReport) error {
+func (repo *ReportDataRepositoryAdapter) AddDocument(rep *models.ErrorReport) error {
 	if !repo.Exists(repo.root) {
 		err := repo.MakeDir(repo.root)
 		if err != nil {
