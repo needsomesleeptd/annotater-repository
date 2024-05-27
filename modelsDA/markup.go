@@ -1,11 +1,11 @@
 package models_da //stands for data_acess
 
 import (
-	"annotater/internal/models"
 	"encoding/json"
 	"errors"
 
 	"github.com/jackc/pgtype"
+	"github.com/needsomesleeptd/annotater-core/models"
 )
 
 var (

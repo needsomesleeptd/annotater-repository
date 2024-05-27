@@ -1,11 +1,10 @@
 package repo_adapter
 
 import (
-	repository "annotater/internal/bl/annotationService/annotattionRepo"
-	"annotater/internal/models"
-
 	"fmt"
 
+	"github.com/needsomesleeptd/annotater-core/models"
+	repository "github.com/needsomesleeptd/annotater-core/repositoryPorts"
 	models_da "github.com/needsomesleeptd/annotater-repository/modelsDA"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"

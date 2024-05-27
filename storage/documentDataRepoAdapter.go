@@ -1,12 +1,12 @@
-package doc_data_repo_adapter
+package storage
 
 import (
-	doc_data_repo "annotater/internal/bl/documentService/documentDataRepo"
-	"annotater/internal/models"
 	"fmt"
 	"os"
 
 	"github.com/google/uuid"
+	"github.com/needsomesleeptd/annotater-core/models"
+	repository "github.com/needsomesleeptd/annotater-core/repositoryPorts"
 	"github.com/pkg/errors"
 )
 
@@ -15,7 +15,7 @@ type DocumentDataRepositoryAdapter struct {
 	fileExtension string //it is optional
 }
 
-func NewDocumentRepositoryAdapter(rootSrc string, ext string) doc_data_repo.IDocumentDataRepository {
+func NewReportRepositoryAdapter(rootSrc string, ext string) repository.IDocumentDataRepository {
 	return &DocumentDataRepositoryAdapter{
 		root:          rootSrc,
 		fileExtension: ext,

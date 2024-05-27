@@ -1,6 +1,5 @@
 package models_da //stands for data_acess
-
-import "annotater/internal/models"
+import "github.com/needsomesleeptd/annotater-core/models"
 
 type MarkupType struct {
 	ID          uint64 `gorm:"primaryKey;column:id"`

@@ -1,10 +1,10 @@
 package models_da //stands for data_acess
 
 import (
-	"annotater/internal/models"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/needsomesleeptd/annotater-core/models"
 )
 
 type Document struct {

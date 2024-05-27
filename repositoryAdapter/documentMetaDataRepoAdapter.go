@@ -1,11 +1,10 @@
 package repo_adapter
 
 import (
-	repository "annotater/internal/bl/documentService/documentMetaDataRepo"
-	"annotater/internal/models"
-	models_da "annotater/internal/models/modelsDA"
-
 	"github.com/google/uuid"
+	"github.com/needsomesleeptd/annotater-core/models"
+	repository "github.com/needsomesleeptd/annotater-core/repositoryPorts"
+	models_da "github.com/needsomesleeptd/annotater-repository/modelsDA"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
