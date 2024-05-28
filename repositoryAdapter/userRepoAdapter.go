@@ -25,7 +25,7 @@ func (repo *UserRepositoryAdapter) GetUserByID(id uint64) (*models.User, error) 
 	user_da.ID = id
 	tx := repo.db.First(&user_da)
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 	if tx.Error != nil {
 		return nil, errors.Wrap(tx.Error, "Error getting user by ID")
@@ -39,7 +39,7 @@ func (repo *UserRepositoryAdapter) GetUserByLogin(login string) (*models.User, e
 	tx := repo.db.Where("login = ?", login).First(&user_da)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 	if tx.Error == gorm.ErrRecordNotFound {
 		return nil, models.ErrNotFound
@@ -57,7 +57,7 @@ func (repo *UserRepositoryAdapter) UpdateUserByLogin(login string, user *models.
 	tx := repo.db.Model(&models_da.User{}).Where("login = ?", login).Updates(userDA)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return models.ErrDatabaseConnection
+		return errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -70,7 +70,7 @@ func (repo *UserRepositoryAdapter) DeleteUserByLogin(login string) error {
 	tx := repo.db.Where("login = ?", login).Delete(models_da.User{}) // specifically for gorm
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return models.ErrDatabaseConnection
+		return errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -83,7 +83,7 @@ func (repo *UserRepositoryAdapter) CreateUser(user *models.User) error {
 	tx := repo.db.Create(models_da.ToDaUser(*user))
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return models.ErrDatabaseConnection
+		return errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error == gorm.ErrDuplicatedKey {
@@ -101,7 +101,7 @@ func (repo *UserRepositoryAdapter) GetAllUsers() ([]models.User, error) {
 	tx := repo.db.Find(&usersDA)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {

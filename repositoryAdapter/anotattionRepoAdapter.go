@@ -33,7 +33,7 @@ func (repo *AnotattionRepositoryAdapter) AddAnottation(markUp *models.Markup) er
 	tx := repo.db.Create(markUpDa)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return models.ErrDatabaseConnection
+		return errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error == gorm.ErrForeignKeyViolated {
@@ -50,7 +50,7 @@ func (repo *AnotattionRepositoryAdapter) DeleteAnotattion(id uint64) error { // 
 	tx := repo.db.Where("id = ?", id) //using that because if id is equal to 0 then the first found row will be deleted
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return models.ErrDatabaseConnection
+		return errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -72,7 +72,7 @@ func (repo *AnotattionRepositoryAdapter) GetAnottationByID(id uint64) (*models.M
 	tx := repo.db.Where("id = ?", id).First(&markUpDA)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error == gorm.ErrRecordNotFound {
@@ -93,7 +93,7 @@ func (repo *AnotattionRepositoryAdapter) GetAnottationsByUserID(id uint64) ([]mo
 	tx := repo.db.Where("creator_id = ?", id).Find(&markUpsDA)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -111,7 +111,7 @@ func (repo *AnotattionRepositoryAdapter) GetAllAnottations() ([]models.Markup, e
 	tx := repo.db.Find(&markUpsDA)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {

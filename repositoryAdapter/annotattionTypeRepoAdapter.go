@@ -25,7 +25,7 @@ func (repo *AnotattionTypeRepositoryAdapter) AddAnottationType(markUp *models.Ma
 	tx := repo.db.Create(models_da.ToDaMarkupType(*markUp))
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return models.ErrDatabaseConnection
+		return errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error == gorm.ErrDuplicatedKey {
@@ -44,7 +44,7 @@ func (repo *AnotattionTypeRepositoryAdapter) DeleteAnotattionType(id uint64) err
 		err := tx.Where("class_label = ?", id).Delete(&models_da.Markup{}).Error
 
 		if errors.Is(err, syscall.ECONNREFUSED) {
-			return models.ErrDatabaseConnection
+			return errors.Wrap(models.ErrDatabaseConnection, err.Error())
 		}
 
 		if err != nil {
@@ -54,7 +54,7 @@ func (repo *AnotattionTypeRepositoryAdapter) DeleteAnotattionType(id uint64) err
 		err = tx.Where("id = ?", id).Delete(&models_da.MarkupType{}).Error
 
 		if errors.Is(err, syscall.ECONNREFUSED) {
-			return models.ErrDatabaseConnection
+			return errors.Wrap(models.ErrDatabaseConnection, err.Error())
 		}
 
 		if err != nil {
@@ -75,7 +75,7 @@ func (repo *AnotattionTypeRepositoryAdapter) GetAnottationTypeByID(id uint64) (*
 	}
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -91,7 +91,7 @@ func (repo *AnotattionTypeRepositoryAdapter) GetAnottationTypesByIDs(ids []uint6
 	tx := repo.db.Find(&markUpTypesDA, ids) // works only when the primary key is set and is a valid ID
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -110,7 +110,7 @@ func (repo *AnotattionTypeRepositoryAdapter) GetAnottationTypesByUserID(creator_
 	tx := repo.db.Where("creator_id = ?", creator_id).Find(&markUpsTypeDA)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -126,7 +126,7 @@ func (repo *AnotattionTypeRepositoryAdapter) GetAllAnottationTypes() ([]models.M
 	tx := repo.db.Find(&markUpsTypeDA)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {

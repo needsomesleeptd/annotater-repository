@@ -25,7 +25,7 @@ func (repo *DocumentMetaDataRepositoryAdapter) AddDocument(doc *models.DocumentM
 	tx := repo.db.Create(models_da.ToDaDocument(*doc))
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return models.ErrDatabaseConnection
+		return errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -40,7 +40,7 @@ func (repo *DocumentMetaDataRepositoryAdapter) GetDocumentByID(id uuid.UUID) (*m
 	tx := repo.db.First(&documentDa)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error == gorm.ErrRecordNotFound {
@@ -57,7 +57,7 @@ func (repo *DocumentMetaDataRepositoryAdapter) DeleteDocumentByID(id uuid.UUID) 
 	tx := repo.db.Delete(models.DocumentMetaData{}, id) // specifically for gorm
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return models.ErrDatabaseConnection
+		return errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -70,7 +70,7 @@ func (repo *DocumentMetaDataRepositoryAdapter) GetDocumentsByCreatorID(id uint64
 	tx := repo.db.Where("creator_id = ?", id).Find(&documentsDA)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return nil, models.ErrDatabaseConnection
+		return nil, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
@@ -85,7 +85,7 @@ func (repo *DocumentMetaDataRepositoryAdapter) GetDocumentCountByCreator(id uint
 	tx := repo.db.Model(models_da.Document{}).Where("creator_id = ?", id).Count(&count)
 
 	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
-		return -1, models.ErrDatabaseConnection
+		return -1, errors.Wrap(models.ErrDatabaseConnection, tx.Error.Error())
 	}
 
 	if tx.Error != nil {
