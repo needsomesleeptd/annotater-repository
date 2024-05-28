@@ -1,6 +1,8 @@
 package repo_adapter
 
 import (
+	"syscall"
+
 	"github.com/google/uuid"
 	"github.com/needsomesleeptd/annotater-core/models"
 	repository "github.com/needsomesleeptd/annotater-core/repositoryPorts"
@@ -20,8 +22,12 @@ func NewDocumentRepositoryAdapter(srcDB *gorm.DB) repository.IDocumentMetaDataRe
 }
 
 func (repo *DocumentMetaDataRepositoryAdapter) AddDocument(doc *models.DocumentMetaData) error {
-
 	tx := repo.db.Create(models_da.ToDaDocument(*doc))
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return models.ErrDatabaseConnection
+	}
+
 	if tx.Error != nil {
 		return errors.Wrap(tx.Error, "Error in updating document")
 	}
@@ -32,6 +38,11 @@ func (repo *DocumentMetaDataRepositoryAdapter) GetDocumentByID(id uuid.UUID) (*m
 	var documentDa models_da.Document
 	documentDa.ID = id
 	tx := repo.db.First(&documentDa)
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return nil, models.ErrDatabaseConnection
+	}
+
 	if tx.Error == gorm.ErrRecordNotFound {
 		return nil, models.ErrNotFound
 	}
@@ -44,6 +55,11 @@ func (repo *DocumentMetaDataRepositoryAdapter) GetDocumentByID(id uuid.UUID) (*m
 
 func (repo *DocumentMetaDataRepositoryAdapter) DeleteDocumentByID(id uuid.UUID) error {
 	tx := repo.db.Delete(models.DocumentMetaData{}, id) // specifically for gorm
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return models.ErrDatabaseConnection
+	}
+
 	if tx.Error != nil {
 		return errors.Wrap(tx.Error, "Error in deleting document")
 	}
@@ -52,6 +68,11 @@ func (repo *DocumentMetaDataRepositoryAdapter) DeleteDocumentByID(id uuid.UUID) 
 func (repo *DocumentMetaDataRepositoryAdapter) GetDocumentsByCreatorID(id uint64) ([]models.DocumentMetaData, error) {
 	var documentsDA []models_da.Document
 	tx := repo.db.Where("creator_id = ?", id).Find(&documentsDA)
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return nil, models.ErrDatabaseConnection
+	}
+
 	if tx.Error != nil {
 		return nil, errors.Wrap(tx.Error, "Error in getting documents by creator")
 	}
@@ -62,6 +83,10 @@ func (repo *DocumentMetaDataRepositoryAdapter) GetDocumentsByCreatorID(id uint64
 func (repo *DocumentMetaDataRepositoryAdapter) GetDocumentCountByCreator(id uint64) (int64, error) {
 	var count int64
 	tx := repo.db.Model(models_da.Document{}).Where("creator_id = ?", id).Count(&count)
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return -1, models.ErrDatabaseConnection
+	}
 
 	if tx.Error != nil {
 		return -1, errors.Wrap(tx.Error, "Error in getting count by creator")

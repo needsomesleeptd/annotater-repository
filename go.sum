@@ -87,6 +87,10 @@ github.com/mattn/go-isatty v0.0.7/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hd
 github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
 github.com/needsomesleeptd/annotater-core v0.0.0-20240527222849-6cd59aa107f7 h1:avtztTdMTn1BgdrUxC6XJZa4Fw7d2JskxXzvG7HlkBQ=
 github.com/needsomesleeptd/annotater-core v0.0.0-20240527222849-6cd59aa107f7/go.mod h1:4isxb8gRUmwVZuGeY7aMU8GPExTBTC0er6sSgMsvd6g=
+github.com/needsomesleeptd/annotater-core v0.0.0-20240528160723-05a476100332 h1:C4CRxOprrUvyBFQlVNe+iIXfo/hMNoSheNpgf9EXqEI=
+github.com/needsomesleeptd/annotater-core v0.0.0-20240528160723-05a476100332/go.mod h1:4isxb8gRUmwVZuGeY7aMU8GPExTBTC0er6sSgMsvd6g=
+github.com/needsomesleeptd/annotater-core v0.0.0-20240528164544-fb95ffdd30ae h1:uX8JwwspJpZI/hNC1cE4+prUCUy+Sv70qUAMrP+Lcyg=
+github.com/needsomesleeptd/annotater-core v0.0.0-20240528164544-fb95ffdd30ae/go.mod h1:4isxb8gRUmwVZuGeY7aMU8GPExTBTC0er6sSgMsvd6g=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

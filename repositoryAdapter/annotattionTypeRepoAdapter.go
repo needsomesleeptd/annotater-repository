@@ -1,10 +1,12 @@
 package repo_adapter
 
 import (
+	"syscall"
+
+	"github.com/needsomesleeptd/annotater-core/models"
 	repository "github.com/needsomesleeptd/annotater-core/repositoryPorts"
 	models_da "github.com/needsomesleeptd/annotater-repository/modelsDA"
 
-	"github.com/needsomesleeptd/annotater-core/models"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -21,6 +23,11 @@ func NewAnotattionTypeRepositoryAdapter(srcDB *gorm.DB) repository.IAnotattionTy
 
 func (repo *AnotattionTypeRepositoryAdapter) AddAnottationType(markUp *models.MarkupType) error {
 	tx := repo.db.Create(models_da.ToDaMarkupType(*markUp))
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return models.ErrDatabaseConnection
+	}
+
 	if tx.Error == gorm.ErrDuplicatedKey {
 		return models.ErrDuplicateMarkupType
 	}
@@ -35,16 +42,27 @@ func (repo *AnotattionTypeRepositoryAdapter) DeleteAnotattionType(id uint64) err
 	err := repo.db.Transaction(func(tx *gorm.DB) error {
 
 		err := tx.Where("class_label = ?", id).Delete(&models_da.Markup{}).Error
+
+		if errors.Is(err, syscall.ECONNREFUSED) {
+			return models.ErrDatabaseConnection
+		}
+
 		if err != nil {
 			return errors.Wrap(tx.Error, "Error in deleting anotattion type")
 		}
 
 		err = tx.Where("id = ?", id).Delete(&models_da.MarkupType{}).Error
+
+		if errors.Is(err, syscall.ECONNREFUSED) {
+			return models.ErrDatabaseConnection
+		}
+
 		if err != nil {
 			return errors.Wrap(tx.Error, "Error in deleting anotattion type db")
 		}
 		return nil
 	})
+
 	return err
 }
 
@@ -54,6 +72,10 @@ func (repo *AnotattionTypeRepositoryAdapter) GetAnottationTypeByID(id uint64) (*
 	tx := repo.db.Where("id = ?", id).First(&markUpTypeDA)
 	if tx.Error == gorm.ErrRecordNotFound {
 		return nil, models.ErrNotFound
+	}
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return nil, models.ErrDatabaseConnection
 	}
 
 	if tx.Error != nil {
@@ -67,6 +89,11 @@ func (repo *AnotattionTypeRepositoryAdapter) GetAnottationTypesByIDs(ids []uint6
 	var markUpTypesDA []models_da.MarkupType
 
 	tx := repo.db.Find(&markUpTypesDA, ids) // works only when the primary key is set and is a valid ID
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return nil, models.ErrDatabaseConnection
+	}
+
 	if tx.Error != nil {
 		return nil, errors.Wrap(tx.Error, "Error in getting anotattion type db")
 	}
@@ -81,6 +108,11 @@ func (repo *AnotattionTypeRepositoryAdapter) GetAnottationTypesByIDs(ids []uint6
 func (repo *AnotattionTypeRepositoryAdapter) GetAnottationTypesByUserID(creator_id uint64) ([]models.MarkupType, error) {
 	var markUpsTypeDA []models_da.MarkupType
 	tx := repo.db.Where("creator_id = ?", creator_id).Find(&markUpsTypeDA)
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return nil, models.ErrDatabaseConnection
+	}
+
 	if tx.Error != nil {
 		return nil, errors.Wrap(tx.Error, "Error in getting anotattion type db")
 	}
@@ -92,6 +124,11 @@ func (repo *AnotattionTypeRepositoryAdapter) GetAnottationTypesByUserID(creator_
 func (repo *AnotattionTypeRepositoryAdapter) GetAllAnottationTypes() ([]models.MarkupType, error) {
 	var markUpsTypeDA []models_da.MarkupType
 	tx := repo.db.Find(&markUpsTypeDA)
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return nil, models.ErrDatabaseConnection
+	}
+
 	if tx.Error != nil {
 		return nil, errors.Wrap(tx.Error, "Error in getting anotattion type db")
 	}

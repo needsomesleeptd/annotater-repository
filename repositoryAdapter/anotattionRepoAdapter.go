@@ -2,6 +2,7 @@ package repo_adapter
 
 import (
 	"fmt"
+	"syscall"
 
 	"github.com/needsomesleeptd/annotater-core/models"
 	repository "github.com/needsomesleeptd/annotater-core/repositoryPorts"
@@ -30,6 +31,11 @@ func (repo *AnotattionRepositoryAdapter) AddAnottation(markUp *models.Markup) er
 		return errors.Wrap(err, "Error in getting anotattion type")
 	}
 	tx := repo.db.Create(markUpDa)
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return models.ErrDatabaseConnection
+	}
+
 	if tx.Error == gorm.ErrForeignKeyViolated {
 		return models.ErrViolatingKeyAnnot
 	}
@@ -42,6 +48,11 @@ func (repo *AnotattionRepositoryAdapter) AddAnottation(markUp *models.Markup) er
 
 func (repo *AnotattionRepositoryAdapter) DeleteAnotattion(id uint64) error { // do we need transactions here?
 	tx := repo.db.Where("id = ?", id) //using that because if id is equal to 0 then the first found row will be deleted
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return models.ErrDatabaseConnection
+	}
+
 	if tx.Error != nil {
 		return errors.Wrap(tx.Error, "Error in deleting anotattion")
 	}
@@ -60,6 +71,10 @@ func (repo *AnotattionRepositoryAdapter) GetAnottationByID(id uint64) (*models.M
 	var markUpDA models_da.Markup
 	tx := repo.db.Where("id = ?", id).First(&markUpDA)
 
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return nil, models.ErrDatabaseConnection
+	}
+
 	if tx.Error == gorm.ErrRecordNotFound {
 		return nil, models.ErrNotFound
 	}
@@ -76,6 +91,11 @@ func (repo *AnotattionRepositoryAdapter) GetAnottationByID(id uint64) (*models.M
 func (repo *AnotattionRepositoryAdapter) GetAnottationsByUserID(id uint64) ([]models.Markup, error) {
 	var markUpsDA []models_da.Markup
 	tx := repo.db.Where("creator_id = ?", id).Find(&markUpsDA)
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return nil, models.ErrDatabaseConnection
+	}
+
 	if tx.Error != nil {
 		return nil, errors.Wrap(tx.Error, "Error in getting anotattion type")
 	}
@@ -89,6 +109,11 @@ func (repo *AnotattionRepositoryAdapter) GetAnottationsByUserID(id uint64) ([]mo
 func (repo *AnotattionRepositoryAdapter) GetAllAnottations() ([]models.Markup, error) {
 	var markUpsDA []models_da.Markup
 	tx := repo.db.Find(&markUpsDA)
+
+	if errors.Is(tx.Error, syscall.ECONNREFUSED) {
+		return nil, models.ErrDatabaseConnection
+	}
+
 	if tx.Error != nil {
 		return nil, errors.Wrap(tx.Error, "Error in getting anotattion type")
 	}
