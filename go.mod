@@ -5,7 +5,7 @@ go 1.22.2
 require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgtype v1.14.3
-	github.com/needsomesleeptd/annotater-core v0.0.0-20240527195555-8eb03b5f24de
+	github.com/needsomesleeptd/annotater-core v0.0.0-20240527222849-6cd59aa107f7
 	github.com/pkg/errors v0.9.1
 	gorm.io/gorm v1.25.10
 )
